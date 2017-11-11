@@ -17,7 +17,10 @@ class DeckScreen extends Component {
   startQuiz() {}
 
   render() {
-    // Reactotron.log(this.props.navigation.state.params.title);
+    const theDeck = this.props.decks.filter(
+      deck => deck.title === this.props.navigation.state.params.title
+    );
+
     return (
       <View
         style={{
@@ -34,7 +37,7 @@ class DeckScreen extends Component {
             fontSize: 40
           }}
         >
-          {this.props.navigation.state.params.title}
+          {theDeck[0].title}
         </Text>
         <Text
           style={{
@@ -44,7 +47,7 @@ class DeckScreen extends Component {
             fontSize: 20
           }}
         >
-          {this.props.navigation.state.params.questions.length} Cards
+          {theDeck[0].questions.length} Cards
         </Text>
         <Button
           title="Add card"
@@ -63,4 +66,10 @@ class DeckScreen extends Component {
   }
 }
 
-export default connect(null, null)(DeckScreen);
+function mapStateToProps({ decks }) {
+  return {
+    decks: Object.keys(decks).map(key => decks[key])
+  };
+}
+
+export default connect(mapStateToProps)(DeckScreen);

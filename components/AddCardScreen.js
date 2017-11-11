@@ -29,7 +29,7 @@ class AddCardScreen extends Component {
 
     this.props.updateDeck({ [newdeck.title]: newdeck });
 
-    navigate("Quiz", newdeck);
+    this.props.navigation.goBack();
   }
 
   render() {
