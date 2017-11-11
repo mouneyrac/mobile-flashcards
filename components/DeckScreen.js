@@ -6,15 +6,30 @@ import Reactotron from "reactotron-react-native";
 class DeckScreen extends Component {
   addCard() {
     const { navigate } = this.props.navigation;
+    const theDeck = this.props.decks.filter(
+      deck => deck.title === this.props.navigation.state.params.title
+    );
+
     navigate("AddCard", {
       deck: {
         title: this.props.navigation.state.params.title,
-        questions: this.props.navigation.state.params.questions
+        questions: theDeck[0].questions
       }
     });
   }
 
-  startQuiz() {}
+  startQuiz() {
+    const { navigate } = this.props.navigation;
+    const theDeck = this.props.decks.filter(
+      deck => deck.title === this.props.navigation.state.params.title
+    );
+    navigate("StartedQuiz", {
+      deck: {
+        title: this.props.navigation.state.params.title,
+        questions: theDeck[0].questions
+      }
+    });
+  }
 
   render() {
     const theDeck = this.props.decks.filter(
@@ -55,12 +70,16 @@ class DeckScreen extends Component {
             this.addCard();
           }}
         />
-        <Button
-          title="Start quiz"
-          onPress={() => {
-            this.startQuiz();
-          }}
-        />
+        {theDeck[0].questions.length !== 0 ? (
+          <Button
+            title="Start quiz"
+            onPress={() => {
+              this.startQuiz();
+            }}
+          />
+        ) : (
+          <View />
+        )}
       </View>
     );
   }
