@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, Text, Button } from "react-native";
 import { connect } from "react-redux";
 import Reactotron from "reactotron-react-native";
+import FlipCard from "react-native-flip-card";
 
 class QuizScreen extends Component {
   state = {
@@ -23,6 +24,7 @@ class QuizScreen extends Component {
     ) {
       this.setState({
         currentCard: this.state.currentCard + 1,
+        cardSide: "question",
         score: this.state.score + points
       });
     } else {
@@ -37,17 +39,6 @@ class QuizScreen extends Component {
     const currentCard = this.props.navigation.state.params.deck.questions[
       this.state.currentCard
     ];
-
-    let maintext = "";
-    if (
-      this.props.navigation.state.params.deck.questions.length >
-      this.state.currentCard
-    ) {
-      maintext =
-        this.state.cardSide === "question"
-          ? currentCard.question
-          : currentCard.answer;
-    }
 
     const currentScore =
       this.state.score /
@@ -87,17 +78,37 @@ class QuizScreen extends Component {
               this.props.navigation.state.params.deck.questions.length
             }
           </Text>
-          <Text
+          <FlipCard
             style={{
-              marginTop: 50,
-              margin: 20,
+              marginTop: 0,
+              paddingBottom: 50,
+              margin: 0,
               padding: 0,
-              alignSelf: "center",
-              fontSize: 20
+              alignSelf: "center"
+            }}
+            friction={6}
+            alignHeight={true}
+            perspective={500}
+            flipHorizontal={true}
+            flipVertical={false}
+            flip={this.state.cardSide === "question" ? false : true}
+            clickable={false}
+            onFlipEnd={isFlipEnd => {
+              console.log("isFlipEnd", isFlipEnd);
             }}
           >
-            {maintext}
-          </Text>
+            {/* Face Side */}
+            <View style={{ flex: 1, marginBottom: 50 }}>
+              <Text style={{ fontSize: 20, marginBottom: 50 }}>
+                {currentCard.question}
+              </Text>
+            </View>
+            {/* Back Side */}
+            <View>
+              <Text style={{ fontSize: 20 }}> {currentCard.answer}</Text>
+            </View>
+          </FlipCard>
+
           <View
             style={{
               marginBottom: 50
