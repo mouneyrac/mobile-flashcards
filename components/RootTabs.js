@@ -9,7 +9,7 @@ const RootTabs = TabNavigator(
     Decks: {
       screen: DeckListScreen,
       navigationOptions: {
-        tabBarLabel: "Deck List",
+        tabBarLabel: "Decks",
         tabBarIcon: ({ tintColor, focused }) => (
           <Ionicons
             name={focused ? "ios-home" : "ios-home-outline"}
