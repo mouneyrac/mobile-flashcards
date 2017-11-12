@@ -64,9 +64,6 @@ class QuizScreen extends Component {
   }
 
   render() {
-    Reactotron.log(this.state.currentCardIndex);
-    Reactotron.log(this.state.totalCards);
-
     const answerButtons = this.state.completed ? (
       <View
         style={{

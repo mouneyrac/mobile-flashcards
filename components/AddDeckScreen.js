@@ -11,10 +11,12 @@ class AddDeckScreen extends Component {
   addDeck() {
     const { navigate } = this.props.navigation;
 
+    const deck = { title: this.state.title, questions: [] };
+
     this.props.addDeck({
-      [this.state.title]: { title: this.state.title, questions: [] }
+      [this.state.title]: deck
     });
-    navigate("Decks");
+    navigate("Quiz", { title: this.state.title, questions: [] });
   }
 
   render() {
