@@ -6,10 +6,18 @@ import FlipCard from "react-native-flip-card";
 
 class QuizScreen extends Component {
   state = {
-    currentCard: 0,
+    currentCardIndex: 0,
+    currentCard: {},
     cardSide: "question",
-    score: 0
+    score: 0,
+    scorePercent: 0,
+    completed: 0,
+    totalCards: 0
   };
+
+  componentWillMount() {
+    this.restart();
+  }
 
   flipCard() {
     this.state.cardSide === "question"
@@ -18,123 +26,145 @@ class QuizScreen extends Component {
   }
 
   answer(points) {
-    if (
-      this.state.currentCard <=
-      this.props.navigation.state.params.deck.questions.length
-    ) {
+    const newScore = this.state.score + points;
+    const newScorePercent = parseInt(
+      newScore / this.state.totalCards * 100,
+      10
+    );
+
+    if (this.state.currentCardIndex + 1 < this.state.totalCards) {
       this.setState({
-        currentCard: this.state.currentCard + 1,
+        currentCardIndex: this.state.currentCardIndex + 1,
+        currentCard: this.props.navigation.state.params.deck.questions[
+          this.state.currentCardIndex + 1
+        ],
         cardSide: "question",
-        score: this.state.score + points
+        score: newScore,
+        scorePercent: newScorePercent
       });
     } else {
-      this.setState({ score: this.state.score + points });
+      this.setState({
+        score: newScore,
+        scorePercent: newScorePercent,
+        completed: 1
+      });
     }
   }
 
+  restart() {
+    this.setState({
+      currentCardIndex: 0,
+      currentCard: this.props.navigation.state.params.deck.questions[0],
+      cardSide: "question",
+      score: 0,
+      scorePercent: 0,
+      completed: 0,
+      totalCards: this.props.navigation.state.params.deck.questions.length
+    });
+  }
+
   render() {
-    Reactotron.log(this.state.currentCard);
-    Reactotron.log(this.props.navigation.state.params.deck.questions.length);
+    Reactotron.log(this.state.currentCardIndex);
+    Reactotron.log(this.state.totalCards);
 
-    const currentCard = this.props.navigation.state.params.deck.questions[
-      this.state.currentCard
-    ];
-
-    const currentScore =
-      this.state.score /
-      this.props.navigation.state.params.deck.questions.length *
-      100;
-
-    const finalScore =
-      this.props.navigation.state.params.deck.questions.length >
-      this.state.currentCard ? (
-        <View />
-      ) : (
+    const answerButtons = this.state.completed ? (
+      <View
+        style={{
+          marginTop: 50
+        }}
+      >
+        <Button
+          title="Restart"
+          onPress={() => {
+            this.restart();
+          }}
+        />
+      </View>
+    ) : (
+      <View>
         <Text
           style={{
-            padding: 50,
-            alignSelf: "center",
+            padding: 10,
+            alignSelf: "flex-start",
             fontSize: 20
           }}
         >
-          Final score of {parseInt(currentScore, 10)}%
+          {this.state.currentCardIndex + 1}/{this.state.totalCards}
         </Text>
-      );
-
-    const answerButtons =
-      this.props.navigation.state.params.deck.questions.length <=
-      this.state.currentCard ? (
-        <View />
-      ) : (
-        <View>
-          <Text
-            style={{
-              padding: 10,
-              alignSelf: "flex-start",
-              fontSize: 20
-            }}
-          >
-            {this.state.currentCard + 1}/{
-              this.props.navigation.state.params.deck.questions.length
-            }
-          </Text>
-          <FlipCard
-            style={{
-              marginTop: 0,
-              paddingBottom: 50,
-              margin: 0,
-              padding: 0,
-              alignSelf: "center"
-            }}
-            friction={6}
-            alignHeight={true}
-            perspective={500}
-            flipHorizontal={true}
-            flipVertical={false}
-            flip={this.state.cardSide === "question" ? false : true}
-            clickable={false}
-            onFlipEnd={isFlipEnd => {
-              console.log("isFlipEnd", isFlipEnd);
-            }}
-          >
-            {/* Face Side */}
-            <View style={{ flex: 1, marginBottom: 50 }}>
-              <Text style={{ fontSize: 20, marginBottom: 50 }}>
-                {currentCard.question}
-              </Text>
-            </View>
-            {/* Back Side */}
-            <View>
-              <Text style={{ fontSize: 20 }}> {currentCard.answer}</Text>
-            </View>
-          </FlipCard>
-
-          <View
-            style={{
-              marginBottom: 50
-            }}
-          >
-            <Button
-              title={this.state.cardSide === "question" ? "Answer" : "Question"}
-              onPress={() => {
-                this.flipCard();
-              }}
-            />
+        <FlipCard
+          style={{
+            marginTop: 0,
+            paddingBottom: 50,
+            margin: 0,
+            padding: 0,
+            alignSelf: "center"
+          }}
+          friction={6}
+          alignHeight={true}
+          perspective={500}
+          flipHorizontal={true}
+          flipVertical={false}
+          flip={this.state.cardSide === "question" ? false : true}
+          clickable={false}
+          onFlipEnd={isFlipEnd => {
+            console.log("isFlipEnd", isFlipEnd);
+          }}
+        >
+          {/* Face Side */}
+          <View style={{ flex: 1, marginBottom: 50 }}>
+            <Text style={{ fontSize: 20, marginBottom: 50 }}>
+              {this.state.currentCard.question}
+            </Text>
           </View>
+          {/* Back Side */}
+          <View>
+            <Text style={{ fontSize: 20 }}>
+              {" "}
+              {this.state.currentCard.answer}
+            </Text>
+          </View>
+        </FlipCard>
+
+        <View
+          style={{
+            marginBottom: 50
+          }}
+        >
           <Button
-            title="Correct"
+            title={this.state.cardSide === "question" ? "Answer" : "Question"}
             onPress={() => {
-              this.answer(1);
-            }}
-          />
-          <Button
-            title="Incorrect"
-            onPress={() => {
-              this.answer(0);
+              this.flipCard();
             }}
           />
         </View>
-      );
+        <Button
+          title="Correct"
+          onPress={() => {
+            this.answer(1);
+          }}
+        />
+        <Button
+          title="Incorrect"
+          onPress={() => {
+            this.answer(0);
+          }}
+        />
+      </View>
+    );
+
+    const finalScore = !this.state.completed ? (
+      <View />
+    ) : (
+      <Text
+        style={{
+          padding: 50,
+          alignSelf: "center",
+          fontSize: 20
+        }}
+      >
+        Final score of {this.state.scorePercent}%
+      </Text>
+    );
 
     return (
       <View

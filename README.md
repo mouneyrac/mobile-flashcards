@@ -4,7 +4,11 @@ This is my personal submission for the final assessment project for Udacity's Re
 
 yarn install
 
-yarn start
+yarn run ios
+
+## Requirements
+
+Only works on iOS. It may or may not work on Android, I have not tested.
 
 ## Contributing
 
